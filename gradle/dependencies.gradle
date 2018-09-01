@@ -1,0 +1,43 @@
+def Group(Closure closure) {
+    closure.delegate = dependencies
+    return closure
+}
+
+ext {
+    kotlin = Group {
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    }
+
+    androidSupport = Group {
+        implementation "com.android.support:support-compat:$versions.androidSupport"
+        implementation "com.android.support:support-v4:$versions.androidSupport"
+        implementation "com.android.support:appcompat-v7:$versions.androidSupport"
+        implementation "com.android.support:recyclerview-v7:$versions.androidSupport"
+        implementation "com.android.support:design:$versions.androidSupport"
+        implementation "com.android.support.constraint:constraint-layout:$versions.constraintLayout"
+
+        implementation 'com.jpardogo.googleprogressbar:library:1.2.0'
+    }
+
+    architecture = Group {
+        implementation "android.arch.lifecycle:viewmodel:$versions.architecture"
+        implementation "android.arch.lifecycle:livedata:$versions.architecture"
+        kapt "android.arch.lifecycle:compiler:$versions.architecture"
+        implementation "android.arch.lifecycle:extensions:$versions.architecture"
+        implementation "android.arch.lifecycle:reactivestreams:$versions.architecture"
+    }
+
+    kodein = Group {
+        implementation "org.kodein.di:kodein-di-generic-jvm:$versions.kodein"
+        implementation "org.kodein.di:kodein-di-framework-android-support:$versions.kodein"
+    }
+
+}
+
+ext.versions = [
+        kotlin              : '1.2.61',
+        androidSupport      : '27.1.1',
+        constraintLayout    : '1.1.2',
+        architecture        : '1.1.1',
+        kodein              : '5.2.0'
+]
