@@ -1,4 +1,4 @@
-package br.com.thiagozg.mqqt
+package br.com.thiagozg.mqtt
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

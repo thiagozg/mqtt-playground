@@ -34,5 +34,6 @@ dependencies {
     kotlin()
     androidSupport()
     architecture()
-    kodein()
+    mqtt()
+    dagger()
 }

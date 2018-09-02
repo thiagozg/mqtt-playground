@@ -27,9 +27,19 @@ ext {
         implementation "android.arch.lifecycle:reactivestreams:$versions.architecture"
     }
 
-    kodein = Group {
-        implementation "org.kodein.di:kodein-di-generic-jvm:$versions.kodein"
-        implementation "org.kodein.di:kodein-di-framework-android-support:$versions.kodein"
+    mqtt = Group {
+        implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$versions.mqqtClient"
+        implementation ("org.eclipse.paho:org.eclipse.paho.android.service:$versions.mqqtClient") {
+            exclude module: 'support-v4'
+        }
+    }
+
+    dagger = Group {
+        implementation "com.google.dagger:dagger:$versions.dagger"
+        kapt "com.google.dagger:dagger-compiler:$versions.dagger"
+        implementation "com.google.dagger:dagger-android:$versions.dagger"
+        implementation "com.google.dagger:dagger-android-support:$versions.dagger"
+        kapt "com.google.dagger:dagger-android-processor:$versions.dagger"
     }
 
 }
@@ -39,5 +49,6 @@ ext.versions = [
         androidSupport      : '27.1.1',
         constraintLayout    : '1.1.2',
         architecture        : '1.1.1',
-        kodein              : '5.2.0'
+        mqqtClient          : '1.1.1',
+        dagger              : '2.16'
 ]

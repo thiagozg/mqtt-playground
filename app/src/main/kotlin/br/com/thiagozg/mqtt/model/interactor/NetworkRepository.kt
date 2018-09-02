@@ -1,17 +1,12 @@
-package br.com.thiagozg.mqqt.main
+package br.com.thiagozg.mqtt.model.interactor
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
+import br.com.thiagozg.mqtt.model.domain.WifiConnectionStatus
 
-class MainViewModel(context: Context) : ViewModel() {
-
-//    private val networkRepository by lazy {
-//        NetworkRepository()
-//    }
+class NetworkRepository(context: Context) {
 
     private val wifiServiceManager: WifiManager by lazy {
         context.applicationContext
@@ -23,12 +18,6 @@ class MainViewModel(context: Context) : ViewModel() {
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
-    private val connectionStatus = MutableLiveData<Boolean>()
-    private val progressStatus = MutableLiveData<Boolean>()
-
-    fun getConnectionStatus() = connectionStatus
-    fun getProgressStatus() = progressStatus
-
     private fun activeWifi() {
         if (!wifiServiceManager.isWifiEnabled) {
             Thread.sleep(1000L)
@@ -36,8 +25,7 @@ class MainViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun connectToWifi(networkSSID: String, networkPassword: String) {
-        progressStatus.value = true
+    fun connectWifi(networkSSID: String, networkPassword: String): WifiConnectionStatus {
         activeWifi()
 
         val conf = WifiConfiguration()
@@ -57,23 +45,10 @@ class MainViewModel(context: Context) : ViewModel() {
         wifiServiceManager.reconnect()
 
         Thread.sleep(4500)
-        connectionStatus.value = isConnectedToWifi()
-        progressStatus.value = false
+        return WifiConnectionStatus(hasWifiConnection(), networkSSID)
     }
 
-    private fun getExistingNetworkId(SSID: String): Int {
-        val configuredNetworks = wifiServiceManager.configuredNetworks
-        if (configuredNetworks != null) {
-            for (existingConfig in configuredNetworks) {
-                if (existingConfig.SSID == SSID) {
-                    return existingConfig.networkId
-                }
-            }
-        }
-        return -1
-    }
-
-    private fun isConnectedToWifi(): Boolean {
+    fun hasWifiConnection(): Boolean {
         val networks = wifiConnectionManager.allNetworks
         if (networks != null && !networks.isEmpty()) {
             for (i in 0 until networks.size) {
@@ -86,6 +61,18 @@ class MainViewModel(context: Context) : ViewModel() {
         }
 
         return false
+    }
+
+    private fun getExistingNetworkId(SSID: String): Int {
+        val configuredNetworks = wifiServiceManager.configuredNetworks
+        if (configuredNetworks != null) {
+            for (existingConfig in configuredNetworks) {
+                if (existingConfig.SSID == SSID) {
+                    return existingConfig.networkId
+                }
+            }
+        }
+        return -1
     }
 
 }

@@ -1,4 +1,4 @@
-package br.com.thiagozg.mqqt
+package br.com.thiagozg.mqtt
 
 import org.junit.Test
 
