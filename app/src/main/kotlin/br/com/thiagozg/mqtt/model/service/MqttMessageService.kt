@@ -19,7 +19,7 @@ class MqttMessageService : Service() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
-        mqttRepository.connectMqttClient().setCallback(object : MqttCallbackExtended {
+        mqttRepository.getMqttClient().setCallback(object : MqttCallbackExtended {
             override fun connectComplete(b: Boolean, s: String) {
                 Log.d(TAG, "connectComplete")
             }

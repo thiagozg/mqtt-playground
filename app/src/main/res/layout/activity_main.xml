@@ -1,81 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+    
+    <android.support.constraint.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+        
+        <android.support.design.widget.TextInputLayout
+          android:id="@+id/tilSsid"
+          style="@style/Widget.Design.TextInputLayout"
+          android:layout_width="200dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:layout_marginTop="16dp"
+          android:layout_marginEnd="8dp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent">
+            
+            <android.support.design.widget.TextInputEditText
+              android:id="@+id/etSsid"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:hint="@string/ssid"
+              android:textSize="16sp" />
+        </android.support.design.widget.TextInputLayout>
+        
+        <android.support.design.widget.TextInputLayout
+          android:id="@+id/tilPassword"
+          style="@style/Widget.Design.TextInputLayout"
+          android:layout_width="200dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:layout_marginTop="4dp"
+          android:layout_marginEnd="8dp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/tilSsid">
+            
+            <android.support.design.widget.TextInputEditText
+              android:id="@+id/etPassword"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:hint="@string/password"
+              android:inputType="textPassword"
+              android:textSize="16sp" />
+        </android.support.design.widget.TextInputLayout>
+        
+        <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
+          android:id="@+id/pbGoogle"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:visibility="gone"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintLeft_toLeftOf="parent"
+          app:layout_constraintRight_toRightOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:type="folding_circles" />
+        
+        <Button
+          android:id="@+id/btConnectWifi"
+          android:layout_width="200dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:text="@string/connect_wifi"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/tilPassword" />
+        
+        <Button
+          android:id="@+id/btConnectMqtt"
+          android:layout_width="200dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:text="@string/connect_mqtt"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/btConnectWifi" />
+        
+        <Button
+          android:id="@+id/btPublishMqtt"
+          android:layout_width="100dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:text="@string/publish_mqtt"
+          android:textSize="12sp"
+          app:layout_constraintEnd_toStartOf="@id/btSubscribeMqtt"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/btConnectMqtt" />
+    
+        <Button
+          android:id="@+id/btSubscribeMqtt"
+          android:layout_width="100dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:text="@string/subscribe_mqtt"
+          android:textSize="12sp"
+          app:layout_constraintStart_toEndOf="@id/btPublishMqtt"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/btConnectMqtt" />
+    
+    </android.support.constraint.ConstraintLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/tilSsid"
-        style="@style/Widget.Design.TextInputLayout"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/etSsid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ssid"
-            android:textSize="16sp" />
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/tilPassword"
-        style="@style/Widget.Design.TextInputLayout"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilSsid">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:hint="@string/password"
-            android:textSize="16sp" />
-    </android.support.design.widget.TextInputLayout>
-
-    <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
-        android:id="@+id/pbGoogle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:visibility="gone"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:type="folding_circles"/>
-
-    <Button
-        android:id="@+id/btConnectWifi"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="@string/connect_wifi"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilPassword" />
-
-    <Button
-        android:id="@+id/btConnectMqtt"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="@string/connect_mqtt"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btConnectWifi" />
-
-</android.support.constraint.ConstraintLayout>
+</ScrollView>

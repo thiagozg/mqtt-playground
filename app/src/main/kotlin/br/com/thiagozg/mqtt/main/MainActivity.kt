@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        btConnectMqtt.isEnabled = viewModel.isConnectedToWifi()
+        viewModel.isConnectedToWifi().handleButtons()
 
         btConnectWifi.setOnClickListener {
             // TODO : corrigir isso trabalhando com uma thread secundaria
@@ -41,7 +41,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         btConnectMqtt.setOnClickListener {
-            viewModel.connectToMqttClient(this)
+            viewModel.connectToMqttClient()
+        }
+
+        btPublishMqtt.setOnClickListener {
+            viewModel.publishToMqttClient()
+        }
+
+        btSubscribeMqtt.setOnClickListener {
+            viewModel.subscribeToMqttClient()
         }
     }
 
@@ -49,13 +57,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.getWifiConnectionStatus().observe(this, Observer<WifiConnectionStatus> { wifiConnection ->
             pbGoogle.visibility = View.GONE // FIXME: not working
             wifiConnection?.let {
-                btConnectMqtt.isEnabled = it.isConnected
+                it.isConnected.handleButtons()
+
                 if (it.isConnected) {
                     Toast.makeText(this,
                             getString(R.string.device_connected).format(it.networkName),
                             Toast.LENGTH_LONG)
                             .show()
-                    viewModel.connectToMqttClient(this)
+                    viewModel.connectToMqttClient()
                 } else {
                     showRetryDialog(getString(R.string.retry), WIFI_CONNECTION)
                 }
@@ -83,9 +92,15 @@ class MainActivity : AppCompatActivity() {
                     dialog.dismiss()
                     when(connectionType) {
                         WIFI_CONNECTION -> viewModel.connectToWifi(etSsid.text.toString(), etPassword.text.toString())
-                        MQTT_CONNECTION -> viewModel.connectToMqttClient(this)
+                        MQTT_CONNECTION -> viewModel.connectToMqttClient()
                     }
                 }.show()
+    }
+
+    private fun Boolean.handleButtons() = run {
+        btConnectMqtt.isEnabled = this
+        btPublishMqtt.isEnabled = this
+        btSubscribeMqtt.isEnabled = this
     }
 
     companion object {

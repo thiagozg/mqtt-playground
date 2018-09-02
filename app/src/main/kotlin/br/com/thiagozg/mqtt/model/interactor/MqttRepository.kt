@@ -10,9 +10,10 @@ import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import java.io.UnsupportedEncodingException
 
-class MqttRepository(private val context: Context) {
+class MqttRepository(context: Context) {
 
-    private lateinit var mqttAndroidClient: MqttAndroidClient
+    private val mqttAndroidClient: MqttAndroidClient =
+            MqttAndroidClient(context, MQTT_BROKER_URL, MqttClient.generateClientId())
 
     private val disconnectedBufferOptions: DisconnectedBufferOptions
         get() {
@@ -34,31 +35,43 @@ class MqttRepository(private val context: Context) {
             }
         }
 
-    fun connectMqttClient(clientId: String = MqttClient.generateClientId()): MqttAndroidClient {
-        mqttAndroidClient = MqttAndroidClient(context, MQTT_BROKER_URL, clientId)
-        try {
-            val token = mqttAndroidClient.connect(mqttConnectionOption)
-            token.actionCallback = object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken) {
-                    mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
-                    Log.d(TAG, "Success")
-                }
+    fun connectMqttClient(): Boolean {
+        var isConnectedSuccessed = true
+        if (!mqttAndroidClient.isConnected) {
+            try {
+                val token = mqttAndroidClient.connect(mqttConnectionOption)
+                token.actionCallback = object : IMqttActionListener {
+                    override fun onSuccess(asyncActionToken: IMqttToken) {
+                        mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
+                        isConnectedSuccessed = true
+                        Log.d(TAG, "Success")
+                    }
 
-                override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    Log.d(TAG, "Failure " + exception.toString())
+                    override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
+                        isConnectedSuccessed = false
+                        Log.d(TAG, "Failure " + exception.toString())
+                    }
                 }
+            } catch (e: MqttException) {
+                e.printStackTrace()
+                isConnectedSuccessed = false
             }
-        } catch (e: MqttException) {
-            e.printStackTrace()
+        }
+
+        return isConnectedSuccessed
+    }
+
+    fun getMqttClient(): MqttAndroidClient {
+        if (!mqttAndroidClient.isConnected) {
+            connectMqttClient()
         }
 
         return mqttAndroidClient
     }
 
-
     @Throws(MqttException::class)
-    fun disconnect(client: MqttAndroidClient) {
-        val mqttToken = client.disconnect()
+    fun disconnect() {
+        val mqttToken = mqttAndroidClient.disconnect()
         mqttToken.actionCallback = object : IMqttActionListener {
             override fun onSuccess(iMqttToken: IMqttToken) {
                 Log.d(TAG, "Successfully disconnected")
@@ -72,34 +85,38 @@ class MqttRepository(private val context: Context) {
 
 
     @Throws(MqttException::class, UnsupportedEncodingException::class)
-    fun publishMessage(client: MqttAndroidClient, msg: String, qos: Int, topic: String) {
+    fun publishMessage(msg: String, qos: Int, topic: String) {
         val encodedPayload: ByteArray = msg.toByteArray(charset("UTF-8"))
         val message = MqttMessage(encodedPayload)
         message.id = 320
         message.isRetained = true
         message.qos = qos
-        client.publish(topic, message)
+        mqttAndroidClient.publish(topic, message)
     }
 
 
     @Throws(MqttException::class)
-    fun subscribe(client: MqttAndroidClient, topic: String, qos: Int) {
-        val token = client.subscribe(topic, qos)
+    fun subscribe(topic: String, qos: Int): Boolean {
+        var isSubscribeSuccessed = true
+        val token = mqttAndroidClient.subscribe(topic, qos)
         token.actionCallback = object : IMqttActionListener {
             override fun onSuccess(iMqttToken: IMqttToken) {
+                isSubscribeSuccessed = true
                 Log.d(TAG, "Subscribe Successfully $topic")
             }
 
             override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
+                isSubscribeSuccessed = false
                 Log.e(TAG, "Subscribe Failed $topic")
             }
         }
+
+        return isSubscribeSuccessed
     }
 
-
     @Throws(MqttException::class)
-    fun unSubscribe(client: MqttAndroidClient, topic: String) {
-        val token = client.unsubscribe(topic)
+    fun unSubscribe(topic: String) {
+        val token = mqttAndroidClient.unsubscribe(topic)
         token.actionCallback = object : IMqttActionListener {
             override fun onSuccess(iMqttToken: IMqttToken) {
                 Log.d(TAG, "UnSubscribe Successfully $topic")
