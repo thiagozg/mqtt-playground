@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+  
+  <android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <ImageView
+      android:id="@+id/ivLogo"
+      android:contentDescription="@string/casenio_logo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/casenio_logo"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+    
+    <TextView
+      android:id="@+id/tvJson"
+      android:layout_width="300dp"
+      android:layout_height="150dp"
+      android:layout_marginTop="20dp"
+      android:padding="10dp"
+      android:background="@color/colorPrimaryDark"
+      android:textSize="24sp"
+      android:textColor="@android:color/white"
+      android:textStyle="bold"
+      android:textAlignment="center"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/ivLogo"
+      tools:text="'status':'OK'"/>
+  
+  </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

@@ -36,4 +36,5 @@ dependencies {
     architecture()
     mqtt()
     dagger()
+    others()
 }

@@ -1,13 +1,16 @@
 <resources>
-    <string name="app_name">MQQT Playground</string>
+    <string name="app_name">MQTT Playground</string>
     <string name="ssid">SSID</string>
     <string name="password">Password</string>
     <string name="connect_wifi">Connect on Wi-fi</string>
     <string name="connect_mqtt">Connect on Mqtt</string>
-    <string name="publish_mqtt">Publish on Mqtt</string>
+    <string name="publish_mqtt">Publish JSON on Mqtt</string>
     <string name="subscribe_mqtt">Subscribe on Mqtt</string>
-    <string name="device_connected">Device connected to %s network!</string>
+    <string name="device_connected_to_wifi">Device connected to %s network!</string>
+    <string name="device_connected_to_mqtt">Device connected to MQTT Cloud!</string>
     <string name="device_not_connected">Was not possible to connect…</string>
     <string name="error">Error</string>
     <string name="retry">Retry</string>
+  <string name="casenio_logo">casenio logo</string>
+  <string name="empty_json">Empty JSON</string>
 </resources>

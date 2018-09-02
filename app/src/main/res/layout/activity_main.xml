@@ -84,23 +84,12 @@
         
         <Button
           android:id="@+id/btPublishMqtt"
-          android:layout_width="100dp"
+          android:layout_width="200dp"
           android:layout_height="wrap_content"
           android:layout_marginTop="10dp"
           android:text="@string/publish_mqtt"
           android:textSize="12sp"
-          app:layout_constraintEnd_toStartOf="@id/btSubscribeMqtt"
           app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/btConnectMqtt" />
-    
-        <Button
-          android:id="@+id/btSubscribeMqtt"
-          android:layout_width="100dp"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="10dp"
-          android:text="@string/subscribe_mqtt"
-          android:textSize="12sp"
-          app:layout_constraintStart_toEndOf="@id/btPublishMqtt"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/btConnectMqtt" />
     

@@ -1,6 +1,7 @@
 package br.com.thiagozg.mqtt.main
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v7.app.AlertDialog
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import br.com.thiagozg.mqtt.R
+import br.com.thiagozg.mqtt.main.ReceiveActivity.Companion.KEY_JSON
 import br.com.thiagozg.mqtt.model.domain.WifiConnectionStatus
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
@@ -47,10 +49,6 @@ class MainActivity : AppCompatActivity() {
         btPublishMqtt.setOnClickListener {
             viewModel.publishToMqttClient()
         }
-
-        btSubscribeMqtt.setOnClickListener {
-            viewModel.subscribeToMqttClient()
-        }
     }
 
     private fun observeWifiConnection() {
@@ -61,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (it.isConnected) {
                     Toast.makeText(this,
-                            getString(R.string.device_connected).format(it.networkName),
+                            getString(R.string.device_connected_to_wifi).format(it.networkName),
                             Toast.LENGTH_LONG)
                             .show()
                     viewModel.connectToMqttClient()
@@ -76,12 +74,25 @@ class MainActivity : AppCompatActivity() {
         viewModel.getMqttConnectionStatus().observe(this, Observer<Boolean> { mqttConnection ->
             mqttConnection?.let {
                 if (it) {
-                    showRetryDialog("CONNECTOOOU", MQTT_CONNECTION)
+                    Toast.makeText(this,
+                        getString(R.string.device_connected_to_mqtt),
+                        Toast.LENGTH_LONG)
+                        .show()
                 } else {
                     showRetryDialog(getString(R.string.retry), MQTT_CONNECTION)
                 }
             }
         })
+    }
+
+    // TODO : chamar da viewModel a partir de um liveData
+    private fun handleMqttMessage(message: String) {
+//        if (message.contains())
+        // TODO: parsear para Json e verificar (add dependency)
+        val intent = Intent(this, ReceiveActivity::class.java).apply {
+            putExtra(KEY_JSON, message)
+        }
+        startActivity(intent)
     }
 
     private fun showRetryDialog(@StringRes stringId: String, connectionType: Int) {
@@ -100,7 +111,6 @@ class MainActivity : AppCompatActivity() {
     private fun Boolean.handleButtons() = run {
         btConnectMqtt.isEnabled = this
         btPublishMqtt.isEnabled = this
-        btSubscribeMqtt.isEnabled = this
     }
 
     companion object {

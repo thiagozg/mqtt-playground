@@ -20,8 +20,8 @@ class NetworkRepository(context: Context) {
 
     private fun activeWifi() {
         if (!wifiServiceManager.isWifiEnabled) {
-            Thread.sleep(1000L)
             wifiServiceManager.isWifiEnabled = true
+            Thread.sleep(1000L)
         }
     }
 
@@ -44,7 +44,7 @@ class NetworkRepository(context: Context) {
         wifiServiceManager.enableNetwork(netId, true)
         wifiServiceManager.reconnect()
 
-        Thread.sleep(4500)
+        Thread.sleep(4000)
         return WifiConnectionStatus(hasWifiConnection(), networkSSID)
     }
 

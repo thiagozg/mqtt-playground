@@ -2,8 +2,6 @@ package br.com.thiagozg.mqtt.di.modules
 
 import android.content.Context
 import br.com.thiagozg.mqtt.MqttApplication
-import br.com.thiagozg.mqtt.di.scopes.PerActivity
-import br.com.thiagozg.mqtt.di.scopes.PerApplication
 import br.com.thiagozg.mqtt.model.interactor.MqttRepository
 import br.com.thiagozg.mqtt.model.interactor.NetworkRepository
 import dagger.Module
