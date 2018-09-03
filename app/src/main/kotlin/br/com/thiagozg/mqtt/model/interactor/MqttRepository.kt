@@ -12,7 +12,7 @@ import java.io.UnsupportedEncodingException
 class MqttRepository(context: Context) {
 
     val mqttConnectionLiveData = MutableLiveData<Boolean>()
-    val mqttMessageLiveData = MutableLiveData<String>()
+    val mqttMessageLiveData = MutableLiveData<MqttMessageResponse>()
     private val gson = Gson()
 
     private val mqttAndroidClient: MqttAndroidClient =
@@ -42,11 +42,11 @@ class MqttRepository(context: Context) {
     fun connectMqttClient() {
         if (!mqttAndroidClient.isConnected) {
             try {
-                val token = mqttAndroidClient.connect(mqttConnectionOption)
-                token.actionCallback = object : IMqttActionListener {
+                mqttAndroidClient.connect(mqttConnectionOption, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken) {
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
-                        subscribe(MQTT_TOPIC, 0)
+                        mqttConnectionLiveData.value = true
+                        unSubscribe(MQTT_DEFAULT_TOPIC)
                         Log.d(TAG, "Success")
                     }
 
@@ -54,12 +54,35 @@ class MqttRepository(context: Context) {
                         mqttConnectionLiveData.value = false
                         Log.d(TAG, "Failure $exception")
                     }
-                }
+                })
+                setCallbackExtended()
             } catch (e: MqttException) {
                 e.printStackTrace()
                 mqttConnectionLiveData.value = false
             }
         }
+    }
+
+    private fun setCallbackExtended() {
+        mqttAndroidClient.setCallback(object : MqttCallbackExtended {
+            override fun connectComplete(b: Boolean, s: String) {
+                Log.w(TAG, "Connected Complete")
+            }
+
+            override fun connectionLost(throwable: Throwable) {
+                Log.w(TAG, "Connection Lost: ${throwable.message}")
+            }
+
+            @Throws(Exception::class)
+            override fun messageArrived(topic: String, mqttMessage: MqttMessage) {
+                Log.w(TAG, "MessageArrived - Topic: $topic \nMessage: ${mqttMessage}")
+                mqttMessageLiveData.value = MqttMessageResponse(mqttMessage.toString(), true)
+            }
+
+            override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {
+                Log.w(TAG, "Delivery Complete: ${iMqttDeliveryToken.message}")
+            }
+        })
     }
 
     fun getMqttClient(): MqttAndroidClient {
@@ -72,15 +95,16 @@ class MqttRepository(context: Context) {
 
     @Throws(MqttException::class)
     fun disconnect() {
-        val mqttToken = mqttAndroidClient.disconnect()
-        mqttToken.actionCallback = object : IMqttActionListener {
-            override fun onSuccess(iMqttToken: IMqttToken) {
-                Log.d(TAG, "Successfully disconnected")
-            }
+        if (mqttAndroidClient.isConnected) {
+            mqttAndroidClient.disconnect(null, object : IMqttActionListener {
+                override fun onSuccess(iMqttToken: IMqttToken) {
+                    Log.d(TAG, "Successfully disconnected")
+                }
 
-            override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
-                Log.d(TAG, "Failed to disconnected " + throwable.toString())
-            }
+                override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
+                    Log.d(TAG, "Failed to disconnected: " + throwable.toString())
+                }
+            })
         }
     }
 
@@ -97,30 +121,32 @@ class MqttRepository(context: Context) {
 
     @Throws(MqttException::class)
     fun subscribe(topic: String, qos: Int) {
-        mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
-            override fun onSuccess(iMqttToken: IMqttToken) {
-                mqttConnectionLiveData.value = true
-                Log.d(TAG, "Subscribe Successfully on $topic")
-            }
+        if (mqttAndroidClient.isConnected) {
+            mqttAndroidClient.subscribe(topic, qos, null, object : IMqttActionListener {
+                override fun onSuccess(iMqttToken: IMqttToken) {
+                    Log.d(TAG, "Subscribe Successfully on $topic")
+                }
 
-            override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
-                mqttConnectionLiveData.value = false
-                Log.e(TAG, "Subscribe Failed on $topic")
-            }
-        })
+                override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
+                    Log.e(TAG, "Subscribe Failed on $topic", throwable)
+                }
+            })
+        }
     }
 
     @Throws(MqttException::class)
     fun unSubscribe(topic: String) {
-        val token = mqttAndroidClient.unsubscribe(topic)
-        token.actionCallback = object : IMqttActionListener {
-            override fun onSuccess(iMqttToken: IMqttToken) {
-                Log.d(TAG, "UnSubscribe Successfully on $topic")
-            }
+        if (mqttAndroidClient.isConnected) {
+            mqttAndroidClient.unsubscribe(topic, null, object : IMqttActionListener {
+                override fun onSuccess(iMqttToken: IMqttToken) {
+                    mqttMessageLiveData.value = MqttMessageResponse(newMessage = false)
+                    Log.d(TAG, "UnSubscribe Successfully on $topic")
+                }
 
-            override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
-                Log.e(TAG, "UnSubscribe Failed on $topic")
-            }
+                override fun onFailure(iMqttToken: IMqttToken, throwable: Throwable) {
+                    Log.e(TAG, "UnSubscribe Failed on $topic", throwable)
+                }
+            })
         }
     }
 

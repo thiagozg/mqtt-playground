@@ -14,7 +14,35 @@ class ReceiveActivity : AppCompatActivity() {
     }
 
     private fun bindViews() {
-        tvJson.text = intent.getStringExtra(KEY_JSON) ?: getString(R.string.empty_json)
+        tvJson.text = intent.getStringExtra(KEY_JSON)?.formatToJsonStyle()
+            ?: getString(R.string.empty_json)
+    }
+
+    private fun String.formatToJsonStyle(): String {
+        val json = StringBuilder()
+        var indentString = ""
+
+        for (i in 0 until length) {
+            val letter = this[i]
+            when (letter) {
+                '{', '[' -> {
+                    json.append("\n$indentString$letter\n")
+                    indentString += "\t"
+                    json.append(indentString)
+                }
+
+                '}', ']' -> {
+                    indentString = indentString.replaceFirst("\t".toRegex(), "")
+                    json.append("\n$indentString$letter")
+                }
+
+                ',' -> json.append("$letter\n$indentString")
+
+                else -> json.append(letter)
+            }
+        }
+
+        return json.toString()
     }
 
     companion object {

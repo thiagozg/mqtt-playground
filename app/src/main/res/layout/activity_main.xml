@@ -5,94 +5,172 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
+  
+  <android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     
-    <android.support.constraint.ConstraintLayout
+    <android.support.design.widget.TextInputLayout
+      android:id="@+id/tilSsid"
+      style="@style/Widget.Design.TextInputLayout"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="8dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.2"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+      
+      <android.support.design.widget.TextInputEditText
+        android:id="@+id/etSsid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/ssid"
+        android:textSize="16sp" />
+    </android.support.design.widget.TextInputLayout>
+    
+    <android.support.design.widget.TextInputLayout
+      android:id="@+id/tilPassword"
+      style="@style/Widget.Design.TextInputLayout"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="4dp"
+      android:layout_marginEnd="8dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.2"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tilSsid">
+      
+      <android.support.design.widget.TextInputEditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:textSize="16sp" />
+    </android.support.design.widget.TextInputLayout>
+    
+    <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
+      android:id="@+id/pbGoogle"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:type="folding_circles" />
+  
+    <Button
+      android:id="@+id/btConnectWifi"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:text="@string/connect_wifi"
+      android:textSize="16sp"
+      app:layout_constraintVertical_bias="0.2"
+      app:layout_constraintBottom_toTopOf="@+id/vDivisor"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@+id/tilSsid"
+      app:layout_constraintTop_toTopOf="parent" />
+  
+    <Button
+      android:id="@+id/btConnectMqtt"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:text="@string/connect_mqtt"
+      app:layout_constraintVertical_bias="0.9"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toEndOf="@+id/tilPassword"
+      app:layout_constraintBottom_toTopOf="@+id/vDivisor" />
+    
+    <View
+      android:id="@+id/vDivisor"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-        
-        <android.support.design.widget.TextInputLayout
-          android:id="@+id/tilSsid"
-          style="@style/Widget.Design.TextInputLayout"
-          android:layout_width="200dp"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="8dp"
-          android:layout_marginTop="16dp"
-          android:layout_marginEnd="8dp"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent">
-            
-            <android.support.design.widget.TextInputEditText
-              android:id="@+id/etSsid"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:hint="@string/ssid"
-              android:textSize="16sp" />
-        </android.support.design.widget.TextInputLayout>
-        
-        <android.support.design.widget.TextInputLayout
-          android:id="@+id/tilPassword"
-          style="@style/Widget.Design.TextInputLayout"
-          android:layout_width="200dp"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="8dp"
-          android:layout_marginTop="4dp"
-          android:layout_marginEnd="8dp"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/tilSsid">
-            
-            <android.support.design.widget.TextInputEditText
-              android:id="@+id/etPassword"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:hint="@string/password"
-              android:inputType="textPassword"
-              android:textSize="16sp" />
-        </android.support.design.widget.TextInputLayout>
-        
-        <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
-          android:id="@+id/pbGoogle"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
-          android:visibility="gone"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintLeft_toLeftOf="parent"
-          app:layout_constraintRight_toRightOf="parent"
-          app:layout_constraintTop_toTopOf="parent"
-          app:type="folding_circles" />
-        
-        <Button
-          android:id="@+id/btConnectWifi"
-          android:layout_width="200dp"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="10dp"
-          android:text="@string/connect_wifi"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/tilPassword" />
-        
-        <Button
-          android:id="@+id/btConnectMqtt"
-          android:layout_width="200dp"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="10dp"
-          android:text="@string/connect_mqtt"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/btConnectWifi" />
-        
-        <Button
-          android:id="@+id/btPublishMqtt"
-          android:layout_width="200dp"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="10dp"
-          android:text="@string/publish_mqtt"
-          android:textSize="12sp"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/btConnectMqtt" />
+      android:layout_height="1dp"
+      android:layout_marginTop="30dp"
+      android:background="@color/colorAccent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tilPassword" />
+  
+    <android.support.design.widget.TextInputLayout
+      android:id="@+id/tilTopic"
+      style="@style/Widget.Design.TextInputLayout"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="16dp"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/vDivisor">
     
-    </android.support.constraint.ConstraintLayout>
+      <android.support.design.widget.TextInputEditText
+        android:id="@+id/etTopic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/topic"
+        android:textSize="16sp" />
+    </android.support.design.widget.TextInputLayout>
+  
+    <Button
+      android:id="@+id/btSubscribeMqtt"
+      android:layout_width="150dp"
+      android:layout_height="wrap_content"
+      android:text="@string/subscribe_mqtt"
+      android:textSize="12sp"
+      android:enabled="false"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="14dp"
+      app:layout_constraintStart_toEndOf="@+id/tilTopic"
+      app:layout_constraintTop_toBottomOf="@id/vDivisor" />
+    
+    <Button
+      android:id="@+id/btUnsubiscribeMqtt"
+      android:layout_width="150dp"
+      android:layout_height="wrap_content"
+      android:text="@string/unsubscribe_mqtt"
+      android:textSize="12sp"
+      android:enabled="false"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="14dp"
+      app:layout_constraintStart_toEndOf="@+id/btSubscribeMqtt"
+      app:layout_constraintTop_toBottomOf="@id/vDivisor"  />
+  
+    <android.support.design.widget.TextInputLayout
+      android:id="@+id/tilMessage"
+      style="@style/Widget.Design.TextInputLayout"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="16dp"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tilTopic">
+    
+      <android.support.design.widget.TextInputEditText
+        android:id="@+id/etMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/message"
+        android:textSize="16sp" />
+    </android.support.design.widget.TextInputLayout>
+  
+    <Button
+      android:id="@+id/btPublishMqtt"
+      android:layout_width="200dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="14dp"
+      android:layout_marginEnd="8dp"
+      android:enabled="false"
+      android:text="@string/publish_mqtt"
+      android:textSize="12sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@+id/tilMessage"
+      app:layout_constraintTop_toBottomOf="@id/btSubscribeMqtt" />
+  
+  </android.support.constraint.ConstraintLayout>
 
 </ScrollView>
