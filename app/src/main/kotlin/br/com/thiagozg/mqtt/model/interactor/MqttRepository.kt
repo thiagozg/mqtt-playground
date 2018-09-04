@@ -11,8 +11,8 @@ import java.io.UnsupportedEncodingException
 
 class MqttRepository(context: Context) {
 
-    val mqttConnectionLiveData = MutableLiveData<Boolean>()
-    val mqttMessageLiveData = MutableLiveData<MqttMessageResponse>()
+    val connectionLiveData = MutableLiveData<Boolean>()
+    val messageLiveData = MutableLiveData<MqttMessageResponse>()
     private val gson = Gson()
 
     private val mqttAndroidClient: MqttAndroidClient =
@@ -45,20 +45,20 @@ class MqttRepository(context: Context) {
                 mqttAndroidClient.connect(mqttConnectionOption, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken) {
                         mqttAndroidClient.setBufferOpts(disconnectedBufferOptions)
-                        mqttConnectionLiveData.value = true
+                        connectionLiveData.value = true
                         unSubscribe(MQTT_DEFAULT_TOPIC)
                         Log.d(TAG, "Success")
                     }
 
                     override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                        mqttConnectionLiveData.value = false
+                        connectionLiveData.value = false
                         Log.d(TAG, "Failure $exception")
                     }
                 })
                 setCallbackExtended()
             } catch (e: MqttException) {
                 e.printStackTrace()
-                mqttConnectionLiveData.value = false
+                connectionLiveData.value = false
             }
         }
     }
@@ -76,7 +76,7 @@ class MqttRepository(context: Context) {
             @Throws(Exception::class)
             override fun messageArrived(topic: String, mqttMessage: MqttMessage) {
                 Log.w(TAG, "MessageArrived - Topic: $topic \nMessage: ${mqttMessage}")
-                mqttMessageLiveData.value = MqttMessageResponse(mqttMessage.toString(), true)
+                messageLiveData.value = MqttMessageResponse(mqttMessage.toString(), true)
             }
 
             override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {
@@ -139,7 +139,7 @@ class MqttRepository(context: Context) {
         if (mqttAndroidClient.isConnected) {
             mqttAndroidClient.unsubscribe(topic, null, object : IMqttActionListener {
                 override fun onSuccess(iMqttToken: IMqttToken) {
-                    mqttMessageLiveData.value = MqttMessageResponse(newMessage = false)
+                    messageLiveData.value = MqttMessageResponse(newMessage = false)
                     Log.d(TAG, "UnSubscribe Successfully on $topic")
                 }
 

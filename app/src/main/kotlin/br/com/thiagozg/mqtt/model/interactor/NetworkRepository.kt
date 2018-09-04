@@ -5,6 +5,8 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
 import br.com.thiagozg.mqtt.model.domain.WifiConnectionStatus
+import io.reactivex.Observable
+import io.reactivex.Single
 
 class NetworkRepository(context: Context) {
 
@@ -18,34 +20,33 @@ class NetworkRepository(context: Context) {
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
-    private fun activeWifi() {
+    fun activeWifi() {
         if (!wifiServiceManager.isWifiEnabled) {
             wifiServiceManager.isWifiEnabled = true
-            Thread.sleep(1000L)
         }
     }
 
-    fun connectWifi(networkSSID: String, networkPassword: String): WifiConnectionStatus {
-        activeWifi()
+    fun connectWifi(networkSSID: String, networkPassword: String): Single<WifiConnectionStatus> {
+        return Single.fromCallable {
+            val conf = WifiConfiguration()
+            conf.SSID = "\"$networkSSID\""
+            conf.preSharedKey = "\"$networkPassword\""
+            conf.status = WifiConfiguration.Status.ENABLED
+            conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA)
+            conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK)
 
-        val conf = WifiConfiguration()
-        conf.SSID = "\"$networkSSID\""
-        conf.preSharedKey = "\"$networkPassword\""
-        conf.status = WifiConfiguration.Status.ENABLED
-        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA)
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK)
+            wifiServiceManager.isWifiEnabled = true
+            var netId = wifiServiceManager.addNetwork(conf)
+            if (netId == -1) {
+                netId = getExistingNetworkId(conf.SSID)
+            }
+            wifiServiceManager.disconnect()
+            wifiServiceManager.enableNetwork(netId, true)
+            wifiServiceManager.reconnect()
 
-        wifiServiceManager.isWifiEnabled = true
-        var netId = wifiServiceManager.addNetwork(conf)
-        if (netId == -1) {
-            netId = getExistingNetworkId(conf.SSID)
+            Thread.sleep(4000)
+            WifiConnectionStatus(hasWifiConnection(), networkSSID)
         }
-        wifiServiceManager.disconnect()
-        wifiServiceManager.enableNetwork(netId, true)
-        wifiServiceManager.reconnect()
-
-        Thread.sleep(4000)
-        return WifiConnectionStatus(hasWifiConnection(), networkSSID)
     }
 
     fun hasWifiConnection(): Boolean {

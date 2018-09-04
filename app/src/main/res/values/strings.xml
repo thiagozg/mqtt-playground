@@ -12,6 +12,7 @@
     <string name="device_connected_to_wifi">Device connected to %s network!</string>
     <string name="device_connected_to_mqtt">Device connected to MQTT Cloud!</string>
     <string name="device_not_connected">Was not possible to connect…</string>
+    <string name="turn_back_ssid">Turn back to SSID inserted…</string>
     <string name="message_publish_retry_with_ok">Message published!\nBut you didn\'t send "OK", type "OK" to see the Casenio logo in the next screen…</string>
     <string name="error">Error</string>
     <string name="atention">Atention</string>

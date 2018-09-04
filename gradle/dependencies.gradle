@@ -41,8 +41,9 @@ ext {
     }
 
     others = Group {
-        implementation 'com.jpardogo.googleprogressbar:library:1.2.0'
         implementation "com.google.code.gson:gson:$versions.gson"
+        implementation "com.github.pwittchen:reactivenetwork-rx2:$versions.rxNetwork"
+        implementation "com.jpardogo.googleprogressbar:library:$versions.googleProgress"
     }
 
 }
@@ -54,5 +55,7 @@ ext.versions = [
         architecture        : '1.1.1',
         mqqtClient          : '1.1.1',
         dagger              : '2.16',
-        gson                : '2.8.5'
+        gson                : '2.8.5',
+        googleProgress      : '1.2.0',
+        rxNetwork           : '2.1.0'
 ]

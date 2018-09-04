@@ -3,14 +3,11 @@ package br.com.thiagozg.mqtt.main
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.StringRes
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import br.com.thiagozg.mqtt.R
-import br.com.thiagozg.mqtt.R.id.*
 import br.com.thiagozg.mqtt.main.ReceiveActivity.Companion.KEY_JSON
 import br.com.thiagozg.mqtt.model.domain.MqttMessageResponse
 import br.com.thiagozg.mqtt.model.domain.MqttVO
@@ -29,6 +26,8 @@ class MainActivity : AppCompatActivity() {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        viewModel.activeWifi()
+        observeLoadingStatus()
         observeWifiConnection()
         observeMqttConnection()
         initViews()
@@ -36,17 +35,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         viewModel.isConnectedToWifi().handleMqttComponents()
-
         btConnectWifi.setOnClickListener {
-            // TODO : corrigir isso trabalhando com uma thread secundaria
-            pbGoogle.visibility = View.VISIBLE
-            pbGoogle.bringToFront()
-
-            // FIXME : remover isso depois
-            viewModel.connectToWifi("RB-5", "residencialrb")
-//            viewModel.connectToWifi(etSsid.text.toString(), etPassword.text.toString())
+            viewModel.connectToWifi(applicationContext, etSsid.text.toString(), etPassword.text.toString())
         }
-
         btConnectMqtt.setOnClickListener {
             viewModel.connectToMqttClient()
         }
@@ -70,20 +61,34 @@ class MainActivity : AppCompatActivity() {
         btSubscribeMqtt.isEnabled = !btSubscribeMqtt.isEnabled
     }
 
+    private fun observeLoadingStatus() {
+        viewModel.getLoadingStatus().observe(this, Observer<Boolean> { isLoading ->
+            isLoading?.let {
+                if (it) {
+                    pbGoogle.visibility = View.VISIBLE
+                    pbGoogle.bringToFront()
+                } else {
+                    pbGoogle.visibility = View.GONE
+                }
+            }
+        })
+    }
+
     private fun observeWifiConnection() {
         viewModel.getWifiConnectionStatus().observe(this, Observer<WifiConnectionStatus> { wifiConnection ->
-            pbGoogle.visibility = View.GONE // FIXME: not working
             wifiConnection?.let {
-                it.isConnected.handleMqttComponents()
-
-                if (it.isConnected) {
-                    Toast.makeText(this,
+                it.isConnected.run {
+                    handleMqttComponents()
+                    if (this) {
+                        Toast.makeText(this@MainActivity,
                             getString(R.string.device_connected_to_wifi).format(it.networkName),
                             Toast.LENGTH_LONG)
                             .show()
-                    viewModel.connectToMqttClient()
-                } else {
-                    showRetryDialog(getString(R.string.retry), WIFI_CONNECTION)
+                        viewModel.connectToMqttClient()
+                    } else {
+                        viewModel.disconnectOfMqttClient()
+                        showRetryDialog(WIFI_CONNECTION, it.isChanged)
+                    }
                 }
             }
         })
@@ -98,10 +103,12 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG)
                         .show()
                     btSubscribeMqtt.isEnabled = true
+                    btConnectMqtt.isEnabled = false
                     observeMqttMessage()
                 } else {
                     btSubscribeMqtt.isEnabled = false
-                    showRetryDialog(getString(R.string.retry), MQTT_CONNECTION)
+                    btConnectMqtt.isEnabled = true
+                    showRetryDialog(MQTT_CONNECTION)
                 }
             }
         })
@@ -131,23 +138,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRetryDialog(@StringRes stringId: String, connectionType: Int) {
+    private fun showRetryDialog(connectionType: Int, isChanged: Boolean = false) {
+        val message = getString(
+            if (!isChanged) R.string.device_not_connected
+            else R.string.turn_back_ssid
+        )
+
         AlertDialog.Builder(this)
                 .setTitle(getString(R.string.error))
-                .setMessage(getString(R.string.device_not_connected))
-                .setNeutralButton(stringId) { dialog, _ ->
+                .setMessage(message)
+                .setNeutralButton(getString(R.string.retry)) { dialog, _ ->
                     dialog.dismiss()
                     when(connectionType) {
-                        WIFI_CONNECTION -> viewModel.connectToWifi(etSsid.text.toString(), etPassword.text.toString())
+                        WIFI_CONNECTION ->
+                            viewModel.connectToWifi(applicationContext,
+                                etSsid.text.toString(), etPassword.text.toString())
                         MQTT_CONNECTION -> viewModel.connectToMqttClient()
                     }
                 }.show()
     }
 
     private fun Boolean.handleMqttComponents() = run {
-        tilTopic.isEnabled = this
-        tilMessage.isEnabled = this
         btConnectMqtt.isEnabled = this
+        etTopic.isEnabled = this
+        etMessage.isEnabled = this
     }
 
     companion object {

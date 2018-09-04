@@ -119,25 +119,26 @@
       android:id="@+id/btSubscribeMqtt"
       android:layout_width="150dp"
       android:layout_height="wrap_content"
-      android:text="@string/subscribe_mqtt"
-      android:textSize="12sp"
-      android:enabled="false"
       android:layout_marginStart="20dp"
       android:layout_marginTop="14dp"
+      android:enabled="false"
+      android:text="@string/subscribe_mqtt"
+      android:textSize="12sp"
+      app:layout_constraintEnd_toStartOf="@+id/btUnsubiscribeMqtt"
       app:layout_constraintStart_toEndOf="@+id/tilTopic"
       app:layout_constraintTop_toBottomOf="@id/vDivisor" />
-    
+  
     <Button
       android:id="@+id/btUnsubiscribeMqtt"
       android:layout_width="150dp"
       android:layout_height="wrap_content"
+      android:layout_marginTop="14dp"
+      android:layout_marginEnd="20dp"
+      android:enabled="false"
       android:text="@string/unsubscribe_mqtt"
       android:textSize="12sp"
-      android:enabled="false"
-      android:layout_marginStart="20dp"
-      android:layout_marginTop="14dp"
-      app:layout_constraintStart_toEndOf="@+id/btSubscribeMqtt"
-      app:layout_constraintTop_toBottomOf="@id/vDivisor"  />
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/vDivisor" />
   
     <android.support.design.widget.TextInputLayout
       android:id="@+id/tilMessage"
