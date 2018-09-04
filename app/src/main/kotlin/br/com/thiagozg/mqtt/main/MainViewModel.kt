@@ -53,11 +53,11 @@ class MainViewModel(val mqttRepository: MqttRepository,
                 .timeout(3L, TimeUnit.MINUTES)
                 .flatMapSingle<Connectivity> { observableNetwork(context, networkSSID) }
                 .subscribe( { connectivity ->
-                    if (connectivity.extraInfo().cleanNetworkInfo() == networkSSID) {
+//                    if (connectivity.extraInfo().cleanNetworkInfo() == networkSSID) {
                         onResponse(true, networkSSID)
-                    } else {
-                        onResponse(false, i     sChanged = true)
-                    }
+//                    } else {
+//                        onResponse(false, isChanged = true)
+//                    }
                 }, {
                     onResponse(false)
                     Log.e(TAG, it.message, it)
@@ -67,8 +67,8 @@ class MainViewModel(val mqttRepository: MqttRepository,
 
     private fun observableNetwork(context: Context, networkSSID: String): Single<Connectivity>? {
         return ReactiveNetwork.observeNetworkConnectivity(context)
-//            .filter { it.detailedState().name == NetworkInfo.State.CONNECTED.name }
-//            .filter { it.extraInfo().cleanNetworkInfo() == networkSSID }
+            .filter { it.detailedState().name == NetworkInfo.State.CONNECTED.name }
+            .filter { it.extraInfo().cleanNetworkInfo() == networkSSID }
             .firstOrError()
     }
 
