@@ -26,8 +26,8 @@ class NetworkRepository(context: Context) {
         }
     }
 
-    fun connectWifi(networkSSID: String, networkPassword: String): Single<WifiConnectionStatus> {
-        return Single.fromCallable {
+    fun connectWifi(networkSSID: String, networkPassword: String): Observable<WifiConnectionStatus> {
+        return Observable.fromCallable {
             val conf = WifiConfiguration()
             conf.SSID = "\"$networkSSID\""
             conf.preSharedKey = "\"$networkPassword\""

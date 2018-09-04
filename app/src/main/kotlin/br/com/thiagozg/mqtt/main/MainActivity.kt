@@ -3,6 +3,7 @@ package br.com.thiagozg.mqtt.main
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -88,6 +89,7 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         viewModel.disconnectOfMqttClient()
                         showRetryDialog(WIFI_CONNECTION, it.isChanged)
+                        viewModel.clearDisposables()
                     }
                 }
             }

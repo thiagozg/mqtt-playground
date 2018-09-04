@@ -5,16 +5,22 @@ import android.arch.lifecycle.ViewModel
 import android.content.Context
 import android.net.NetworkInfo
 import android.util.Log
+import br.com.thiagozg.mqtt.R.string.topic
 import br.com.thiagozg.mqtt.model.domain.*
 import br.com.thiagozg.mqtt.model.interactor.MqttRepository
 import br.com.thiagozg.mqtt.model.interactor.NetworkRepository
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ConnectivityPredicate
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
+import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.InternetObservingSettings.timeout
+import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.SingleSource
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.internal.util.HalfSerializer.onComplete
 import io.reactivex.schedulers.Schedulers.io
+import java.util.concurrent.TimeUnit
 
 
 class MainViewModel(val mqttRepository: MqttRepository,
@@ -40,34 +46,30 @@ class MainViewModel(val mqttRepository: MqttRepository,
     fun connectToWifi(context: Context, networkSSID: String, networkPassword: String) {
         disposables.add(
             networkRepository.connectWifi(networkSSID, networkPassword)
-                .doOnSubscribe { loadingLiveData.postValue(true) }
-                .doAfterTerminate { loadingLiveData.postValue(false) }
-//                .doOnComplete {
-//                    val wifiConnectionStatus =
-//                        WifiConnectionStatus(wifiLiveData.value?.isConnected
-//                            ?: false, networkSSID)
-//                    wifiLiveData.postValue(wifiConnectionStatus)
-//                }
                 .subscribeOn(io())
                 .observeOn(mainThread())
-                .flatMap { observableNetwork(context) }
+                .doOnSubscribe { loadingLiveData.postValue(true) }
+                .doAfterTerminate { loadingLiveData.postValue(false) }
+                .timeout(3L, TimeUnit.MINUTES)
+                .flatMapSingle<Connectivity> { observableNetwork(context, networkSSID) }
                 .subscribe( { connectivity ->
                     if (connectivity.extraInfo().cleanNetworkInfo() == networkSSID) {
-                        onResponse(true, networkSSID, true)
+                        onResponse(true, networkSSID)
                     } else {
-                        onResponse(false, networkSSID, true)
+                        onResponse(false, i     sChanged = true)
                     }
                 }, {
-                    onResponse(false, networkSSID, true)
+                    onResponse(false)
                     Log.e(TAG, it.message, it)
                 })
         )
     }
 
-    private fun observableNetwork(context: Context): Single<Connectivity> {
+    private fun observableNetwork(context: Context, networkSSID: String): Single<Connectivity>? {
         return ReactiveNetwork.observeNetworkConnectivity(context)
-            .filter(ConnectivityPredicate.hasState(NetworkInfo.State.CONNECTED))
-            .singleOrError()
+//            .filter { it.detailedState().name == NetworkInfo.State.CONNECTED.name }
+//            .filter { it.extraInfo().cleanNetworkInfo() == networkSSID }
+            .firstOrError()
     }
 
     private fun String.cleanNetworkInfo() = replace("\"", "")
@@ -91,12 +93,16 @@ class MainViewModel(val mqttRepository: MqttRepository,
 
     override fun onCleared() {
         super.onCleared()
+        clearDisposables()
+    }
+
+    fun clearDisposables() {
         if (!disposables.isDisposed) {
             disposables.dispose()
         }
     }
 
-    private fun onResponse(isConnected: Boolean, networkSSID: String, isChanged: Boolean = false) =
+    private fun onResponse(isConnected: Boolean, networkSSID: String = "", isChanged: Boolean = false) =
         wifiLiveData.postValue(WifiConnectionStatus(isConnected, networkSSID, isChanged))
 
 }

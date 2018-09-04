@@ -7,6 +7,7 @@
   android:layout_height="match_parent">
   
   <android.support.constraint.ConstraintLayout
+    android:id="@+id/clParent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     
@@ -27,6 +28,7 @@
         android:id="@+id/etSsid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLines="1"
         android:hint="@string/ssid"
         android:textSize="16sp" />
     </android.support.design.widget.TextInputLayout>
@@ -48,6 +50,7 @@
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLines="1"
         android:hint="@string/password"
         android:inputType="textPassword"
         android:textSize="16sp" />
